@@ -1,0 +1,51 @@
+[project]
+name = "rob6323_proj"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.11.13"
+dependencies = [
+    "hydra-core>=1.3.2",
+    "torch>=2.7.0",
+    "torchvision>=0.22.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["source"]
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
+
+[[tool.uv.index]]
+name = "isaacsim"
+url = "https://pypi.nvidia.com"
+
+[[tool.uv.index]]
+name = "torch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+
+[tool.uv.sources]
+torch = { index = "torch-cu128" }
+isaaclab = { path = "third_party/IsaacLab/source/isaaclab", editable = true }
+isaaclab-rl = { path = "third_party/IsaacLab/source/isaaclab_rl", editable = true }
+isaaclab-mimic = { path = "third_party/IsaacLab/source/isaaclab_mimic", editable = true }
+isaaclab_tasks = { path = "third_party/IsaacLab/source/isaaclab_tasks", editable = true }
+rob6323_go2 = { path = "source/rob6323_go2", editable = true }
+
+[dependency-groups]
+dev = ["pip>=25.2", "ruff>=0.12.11"]
+isaac = [
+    "isaaclab",
+    "isaaclab-mimic",
+    "isaaclab-rl",
+    "isaaclab_tasks",
+    "isaacsim[all,extscache]==5.1.0",
+    "rob6323_go2"
+]
+rl = [
+    "rsl-rl-lib>=3.2.0",
+]
