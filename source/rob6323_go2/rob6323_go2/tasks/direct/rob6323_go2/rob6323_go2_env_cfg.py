@@ -3,9 +3,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-from isaaclab.actuators.actuator_cfg import ImplicitActuatorCfg
-from isaaclab_assets.robots.unitree import UNITREE_GO2_CFG
-
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg
 from isaaclab.envs import DirectRLEnvCfg
@@ -14,36 +11,43 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.sensors import ContactSensorCfg
+from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.markers import VisualizationMarkersCfg
 from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG
+from isaaclab_assets.robots.unitree import UNITREE_GO2_CFG
+
+
 
 @configclass
 class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     # env
     decimation = 4
     episode_length_s = 20.0
-    # - spaces definition
+
+    # MDP spaces definition
     action_scale = 0.25
     action_space = 12
     observation_space = 48 + 4
     state_space = 0
-    debug_vis = True
+    base_height_min = 0.20  # Terminate if base is lower than 20cm
 
     # rewards
-    action_rate_reward_scale = -0.1
-    base_height_min = 0.20
-    raibert_heuristic_reward_scale = -10.0
-    feet_clearance_reward_scale = -30.0
-    tracking_contacts_shaped_force_reward_scale = 4.0
-    orient_reward_scale = -5.0
-    lin_vel_z_reward_scale = -0.02
-    dof_vel_reward_scale = -0.0001
-    ang_vel_xy_reward_scale = -0.001
+    rewScale_cmd_linVel =         1.0
+    rewScale_cmd_angVel =         0.5
+    rewScale_body_orient =       -5.0
+    rewScale_body_pose =         -0.001
+    rewScale_dofVel =            -0.0001
+    rewScale_actionRate =        -0.1
+    rewScale_bounce =            -0.02
+    rewScale_raibertHeuristic = -10.0
 
-    # PD control gains
-    Kp = 20.0  # Proportional gain
-    Kd = 0.5   # Derivative gain
-    torque_limits = 100.0  # Max torque
+    # PD control Parameters
+    Kp = 20.0
+    Kd = 0.5
+    torque_limits = 100.0
+
+    # debug
+    debug_vis = True
 
     # simulation
     sim: SimulationCfg = SimulationCfg(
@@ -70,9 +74,11 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
         ),
         debug_vis=False,
     )
+
     # robot(s)
-    robot_cfg: ArticulationCfg = UNITREE_GO2_CFG.replace(prim_path="/World/envs/env_.*/Robot")
-    # "base_legs" is an arbitrary key we use to group these actuators
+    robot_cfg: ArticulationCfg = UNITREE_GO2_CFG.replace(
+        prim_path="/World/envs/env_.*/Robot"
+    )
     robot_cfg.actuators["base_legs"] = ImplicitActuatorCfg(
         joint_names_expr=[".*_hip_joint", ".*_thigh_joint", ".*_calf_joint"],
         effort_limit=23.5,
@@ -82,24 +88,24 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     )
 
     # scene
-    scene: InteractiveSceneCfg = InteractiveSceneCfg(num_envs=4096, env_spacing=4.0, replicate_physics=True)
-    contact_sensor: ContactSensorCfg = ContactSensorCfg(
-        prim_path="/World/envs/env_.*/Robot/.*", history_length=3, update_period=0.005, track_air_time=True
+    scene: InteractiveSceneCfg = InteractiveSceneCfg(
+        num_envs=4096, 
+        env_spacing=4.0, 
+        replicate_physics=True
     )
+    contact_sensor: ContactSensorCfg = ContactSensorCfg(
+        prim_path="/World/envs/env_.*/Robot/.*", 
+        history_length=3, 
+        update_period=0.005, 
+        track_air_time=True
+    )
+
+    # visualization markers
     goal_vel_visualizer_cfg: VisualizationMarkersCfg = GREEN_ARROW_X_MARKER_CFG.replace(
         prim_path="/Visuals/Command/velocity_goal"
     )
-    """The configuration for the goal velocity visualization marker. Defaults to GREEN_ARROW_X_MARKER_CFG."""
-
     current_vel_visualizer_cfg: VisualizationMarkersCfg = BLUE_ARROW_X_MARKER_CFG.replace(
         prim_path="/Visuals/Command/velocity_current"
     )
-    """The configuration for the current velocity visualization marker. Defaults to BLUE_ARROW_X_MARKER_CFG."""
-
-    # Set the scale of the visualization markers to (0.5, 0.5, 0.5)
     goal_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
     current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
-
-    # reward scales
-    lin_vel_reward_scale = 1.0
-    yaw_rate_reward_scale = 0.5
