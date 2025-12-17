@@ -52,10 +52,15 @@ class Rob6323Go2Env(DirectRLEnv):
         # Body indices
         self._base_id, _ = self._contact_sensor.find_bodies("base")
         self._feet_ids = []
+        self._feet_ids_sensor = []
         foot_names = ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
         for name in foot_names:
             id_list, _ = self.robot.find_bodies(name)
+            sensor_id_list, _ = self._contact_sensor.find_bodies(name)
             self._feet_ids.append(id_list[0])
+            self._feet_ids_sensor.append(sensor_id_list[0])
+        
+
 
         # Variables - PD Controller
         self.Kp = (
@@ -104,6 +109,8 @@ class Rob6323Go2Env(DirectRLEnv):
                 "action_rate",
                 "bouncing",
                 "raibert_heuristic",
+                "foot_clearance",
+                "tracking_contacts",
             ]
         }
 
@@ -199,6 +206,8 @@ class Rob6323Go2Env(DirectRLEnv):
             "action_rate":       reward_actionRate(self, self.cfg.action_scale) * self.cfg.rewScale_actionRate,
             "bouncing":          reward_bouncing(self.robot) * self.cfg.rewScale_bounce,
             "raibert_heuristic": reward_raibertHeuristic(self, self.robot) * self.cfg.rewScale_raibertHeuristic,
+            "foot_clearance":    reward_footClearance(self) * self.cfg.rewScale_feetClearance,
+            "tracking_contacts": reward_trackContacts(self) * self.cfg.rewScale_trackContacts
         }
         reward = torch.sum(torch.stack(list(rewards.values())), dim=0)
 

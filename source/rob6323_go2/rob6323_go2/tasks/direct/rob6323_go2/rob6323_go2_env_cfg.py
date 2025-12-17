@@ -40,6 +40,8 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     rewScale_actionRate =        -0.1
     rewScale_bounce =            -0.02
     rewScale_raibertHeuristic = -10.0
+    rewScale_feetClearance =    -30.0
+    rewScale_trackContacts =      4.0
 
     # PD control Parameters
     Kp = 20.0

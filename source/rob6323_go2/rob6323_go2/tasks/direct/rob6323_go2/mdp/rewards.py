@@ -193,3 +193,46 @@ def reward_raibertHeuristic(
     )
 
     return torch.sum(torch.square(err_raibert_heuristic), dim=(1, 2))
+
+
+def reward_footClearance(
+        env:    "DirectRLEnv"
+    ) -> torch.Tensor:
+    """
+    reward on lifting feet during swing phase
+
+    Input:
+        - env:      Task Environment Instance
+    Output:
+        - reward:   L2 distance between desired & actual height of the foot
+    """
+    phases = 1 - torch.abs(1.0 - torch.clip((env.foot_indices * 2.0) - 1.0, 0.0, 1.0) * 2.0)
+    foot_height = (env.foot_positions_w[:, :, 2]).view(env.num_envs, -1)
+    target_height = 0.08 * phases + 0.02 # offset for foot radius 2cm
+    reward = torch.sum(
+        torch.square(target_height - foot_height) * (1 - env.desired_contact_states), dim=1
+    )
+    return reward
+
+
+def reward_trackContacts(
+        env:    "DirectRLEnv"
+    ) -> torch.Tensor:
+    """
+    reward on tracking foot contacts states
+
+    Input:
+        - env:      Task Environment Instance
+    Output:
+        - reward:   accumulated reward averaging over all feet
+    """
+    foot_forces = torch.norm(env._contact_sensor.data.net_forces_w[:, env._feet_ids_sensor, :], dim=-1)
+    desired_contact = env.desired_contact_states
+    rew_tracking_contacts_shaped_force = 0.
+    for i in range(4):
+        rew_tracking_contacts_shaped_force += - (
+            1 - desired_contact[:, i]
+        ) * (
+            1 - torch.exp(-1 * foot_forces[:, i] ** 2 / 100.)
+        )
+    return rew_tracking_contacts_shaped_force / 4
