@@ -37,8 +37,8 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     rewScale_body_orient =       -5.0
     rewScale_body_pose =         -0.001
     rewScale_dofVel =            -0.0001
-    rewScale_dofTorque =         -0.00005
-    rewScale_actionRate =        -0.1
+    rewScale_dofTorque =         -0.00002   # Config without friction model -0.00005
+    rewScale_actionRate =        -0.05      # Config without friction model -0.1
     rewScale_bounce =            -0.02
     rewScale_raibertHeuristic = -10.0
     rewScale_feetClearance =    -30.0

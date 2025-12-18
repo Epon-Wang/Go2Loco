@@ -75,6 +75,8 @@ class Rob6323Go2Env(DirectRLEnv):
         )
         self.motor_offsets = torch.zeros(self.num_envs, 12, device=self.device)
         self.torque_limits = cfg.torque_limits
+        self.fs = torch.zeros(self.num_envs, 12, device=self.device)
+        self.uv = torch.zeros(self.num_envs, 12, device=self.device)
 
         # Variables - Raibert Heuristic
         self.gait_indices = torch.zeros(
@@ -145,17 +147,16 @@ class Rob6323Go2Env(DirectRLEnv):
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         self._actions = actions.clone()
-        # self._processed_actions = (
-        #     self.cfg.action_scale * self._actions + self.robot.data.default_joint_pos
-        # )
         # Compute desired joint positions from policy actions
         self.desired_joint_pos = (
             self.cfg.action_scale * self._actions + self.robot.data.default_joint_pos
         )
 
     def _apply_action(self) -> None:
-        # self.robot.set_joint_position_target(self._processed_actions)
-        # Compute PD torques
+        # Option: Direct Position Control
+        # self.robot.set_joint_position_target(self.desired_joint_pos)
+
+        # Option: PD Control with Friction Model
         torques = torch.clip(
             (
                 self.Kp * (self.desired_joint_pos - self.robot.data.joint_pos)
@@ -164,6 +165,10 @@ class Rob6323Go2Env(DirectRLEnv):
             -self.torque_limits,
             self.torque_limits,
         )
+
+        # Friction Model
+        torques -= self.fs * torch.tanh(self.robot.data.joint_vel / 0.1)    # tau_stiction
+        torques -= self.uv * self.robot.data.joint_vel                      # tau_viscous
 
         # Apply torques to the robot
         self.robot.set_joint_effort_target(torques)
@@ -280,9 +285,6 @@ class Rob6323Go2Env(DirectRLEnv):
         self._previous_actions[env_ids] = 0.0
         self.gait_indices[env_ids] = 0
 
-        # Sample new commands
-        self._commands[env_ids] = torch.zeros_like(self._commands[env_ids]).uniform_(-1.0, 1.0)
-
         # Reset robot state
         joint_pos = self.robot.data.default_joint_pos[env_ids]
         joint_vel = self.robot.data.default_joint_vel[env_ids]
@@ -291,6 +293,13 @@ class Rob6323Go2Env(DirectRLEnv):
         self.robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
         self.robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
         self.robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
+
+        # Sample actuator friction model parameters
+        self.fs[env_ids] = torch.zeros_like(self.fs[env_ids]).uniform_(0.0, 0.3)
+        self.uv[env_ids] = torch.zeros_like(self.uv[env_ids]).uniform_(0.0, 2.5)
+
+        # Sample new commands
+        self._commands[env_ids] = torch.zeros_like(self._commands[env_ids]).uniform_(-1.0, 1.0)
 
         # Logging
         extras = dict()
