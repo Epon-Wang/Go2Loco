@@ -5,7 +5,7 @@
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg
-from isaaclab.envs import DirectRLEnvCfg
+from isaaclab.envs import DirectRLEnvCfg, ViewerCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
@@ -29,7 +29,7 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     action_space = 12
     observation_space = 48 + 4
     state_space = 0
-    base_height_min = 0.20  # Terminate if base is lower than 20cm
+    base_height_min = 0.25  # Terminate if base is lower than 25cm
 
     # rewards
     rewScale_cmd_linVel =         1.0
@@ -37,6 +37,7 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     rewScale_body_orient =       -5.0
     rewScale_body_pose =         -0.001
     rewScale_dofVel =            -0.0001
+    rewScale_dofTorque =         -0.00005
     rewScale_actionRate =        -0.1
     rewScale_bounce =            -0.02
     rewScale_raibertHeuristic = -10.0
@@ -62,6 +63,9 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
             dynamic_friction=1.0,
             restitution=0.0,
         ),
+    )
+    viewer: ViewerCfg = ViewerCfg(
+        resolution=(1920, 1080),
     )
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
@@ -93,7 +97,7 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
         num_envs=4096, 
         env_spacing=4.0, 
-        replicate_physics=True
+        replicate_physics=True,
     )
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*", 

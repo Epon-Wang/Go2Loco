@@ -111,6 +111,12 @@ def reward_dofVel(
     return torch.sum(torch.square(robot.data.joint_vel), dim=1)
 
 
+def reward_dofTorque(
+        robot:  Articulation
+    ) -> torch.Tensor:
+    return torch.sum(torch.square(robot.data.computed_torque), dim=1)
+
+
 def reward_bouncing(
         robot:  Articulation
     ) -> torch.Tensor:
