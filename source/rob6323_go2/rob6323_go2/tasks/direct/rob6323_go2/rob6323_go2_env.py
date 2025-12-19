@@ -61,8 +61,6 @@ class Rob6323Go2Env(DirectRLEnv):
             self._feet_ids.append(id_list[0])
             self._feet_ids_sensor.append(sensor_id_list[0])
         
-
-
         # Variables - PD Controller
         self.Kp = (
             torch.tensor([cfg.Kp] * 12, device=self.device)
@@ -135,7 +133,7 @@ class Rob6323Go2Env(DirectRLEnv):
     def _setup_scene(
             self
         ) -> None:
-        
+
         self.robot = Articulation(self.cfg.robot_cfg)
         self._contact_sensor = ContactSensor(self.cfg.contact_sensor)
 

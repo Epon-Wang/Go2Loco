@@ -87,7 +87,7 @@ def reward_bodyPose(
         robot:  Articulation
     ) -> torch.Tensor:
     """
-    reward on zero body rolling & pitching
+    reward on minimal body rolling & pitching
 
     Input:
         - robot:    Robot Instance

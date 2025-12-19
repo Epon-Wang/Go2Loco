@@ -25,7 +25,7 @@ def done_baseContact(
         env:    "DirectRLEnv"
     ) -> torch.Tensor:
     """
-    termination on constraint: undesired base contact with ground
+    termination on constraint: undesired base contact
 
     Input:
         - env:    environment instance
