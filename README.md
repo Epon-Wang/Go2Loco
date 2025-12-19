@@ -2,21 +2,30 @@
 
 Training a robust gait policy for Unitree Go2 quadrupedal locomotion using Proximal Policy Gradient (PPO)
 
-[Collaborators](#collaborators)\
-[Installation](#installation)\
-[Usage](#usage)
-- [Training](#training)
-- [Evaluation](#evaluation)
-- [Notes](#notes)
-
-[Implementation](#implementation)
-- [MDP](#mdp)
-    - [Reward](#reward)
-    - [Termination](#termination)
-    - [Observation](#observation)
-- [PD Controller](#low-level-pd-controller)
-- [Actuator Friction Model](#actuator-friction-model)
-
+<div style="margin-left: 20px;">
+<a href="#collaborators">Collaborators</a><br>
+<a href="#installation">Installation</a><br>
+<a href="#usage">Usage</a>
+<ul style="margin-top: 0px; margin-bottom: 0px;">
+  <li style="margin-bottom: 0px;"><a href="#training">Training</a></li>
+  <li style="margin-bottom: 0px;"><a href="#evaluation">Evaluation</a></li>
+  <li><a href="#notes">Notes</a></li>
+</ul>
+<a href="#implementation">Implementation</a>
+<ul style="margin-top: 0px; margin-bottom: 0px;">
+  <li><a href="#mdp">MDP</a>
+    <ul style="margin-top: 0px; margin-bottom: 0px;">
+      <li style="margin-bottom: 0px;"><a href="#reward">Reward</a></li>
+      <li style="margin-bottom: 0px;"><a href="#termination">Termination</a></li>
+      <li><a href="#observation">Observation</a></li>
+    </ul>
+  </li>
+  <li style="margin-top: 0px;">
+    <a href="#low-level-pd-controller">PD Controller</a></li>
+  <li>
+  <a href="#actuator-friction-model">Actuator Friction Model</a></li>
+</ul>
+</div>
 
 ## Collaborators
 
