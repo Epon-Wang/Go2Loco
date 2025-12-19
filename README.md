@@ -1,6 +1,7 @@
 # ROB-GY 6323 Go2 Project
 
 Reinforcement Learning for Quadrupedal Locomotion. Training robust walking policies for the Unitree Go2 robot using Proximal Policy Optimization (PPO). Employed Raibert Heuristic for gait shaping. Modeled joint actuator friction to bridge the sim-to-real gap.
+
 <img src="docs/img/gait.gif" alt="demo" style="zoom: 60%;" />
 
 ## Collaborators
