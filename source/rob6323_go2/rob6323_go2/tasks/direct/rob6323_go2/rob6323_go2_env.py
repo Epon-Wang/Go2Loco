@@ -11,12 +11,12 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-import isaaclab.sim as sim_utils
-import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation
 from isaaclab.envs import DirectRLEnv
 from isaaclab.markers import VisualizationMarkers
 from isaaclab.sensors import ContactSensor
+import isaaclab.sim as sim_utils
+import isaaclab.utils.math as math_utils
 
 from .mdp.rewards import *
 from .mdp.terminations import *
@@ -27,9 +27,9 @@ class Rob6323Go2Env(DirectRLEnv):
     cfg: Rob6323Go2EnvCfg
 
     def __init__(
-            self, 
-            cfg: Rob6323Go2EnvCfg, 
-            render_mode: str | None = None, 
+            self,
+            cfg: Rob6323Go2EnvCfg,
+            render_mode: str | None = None,
             **kwargs
         ) -> None:
 
@@ -60,7 +60,7 @@ class Rob6323Go2Env(DirectRLEnv):
             sensor_id_list, _ = self._contact_sensor.find_bodies(name)
             self._feet_ids.append(id_list[0])
             self._feet_ids_sensor.append(sensor_id_list[0])
-        
+
         # Variables - PD Controller
         self.Kp = (
             torch.tensor([cfg.Kp] * 12, device=self.device)
@@ -97,7 +97,7 @@ class Rob6323Go2Env(DirectRLEnv):
             device=self.device,
             requires_grad=False,
         )
-        
+
         # Logging
         self._episode_sums = {
             key: torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
@@ -148,7 +148,7 @@ class Rob6323Go2Env(DirectRLEnv):
         # we need to explicitly filter collisions for CPU simulation
         if self.device == "cpu":
             self.scene.filter_collisions(global_prim_paths=[])
-        
+
         # add articulation to scene
         self.scene.articulations["robot"] = self.robot
 
@@ -158,7 +158,7 @@ class Rob6323Go2Env(DirectRLEnv):
 
 
     def _pre_physics_step(
-            self, 
+            self,
             actions: torch.Tensor
         ) -> None:
 
@@ -323,7 +323,7 @@ class Rob6323Go2Env(DirectRLEnv):
 
 
     def _set_debug_vis_impl(
-            self, 
+            self,
             debug_vis: bool
         ) -> None:
         """
@@ -343,7 +343,7 @@ class Rob6323Go2Env(DirectRLEnv):
                 self.current_vel_visualizer = VisualizationMarkers(
                     self.cfg.current_vel_visualizer_cfg
                 )
-            
+
             # set their visibility to true
             self.goal_vel_visualizer.set_visibility(True)
             self.current_vel_visualizer.set_visibility(True)
@@ -353,7 +353,7 @@ class Rob6323Go2Env(DirectRLEnv):
 
 
     def _debug_vis_callback(
-            self, 
+            self,
             event
         ) -> None:
         """
@@ -386,7 +386,7 @@ class Rob6323Go2Env(DirectRLEnv):
 
 
     def _resolve_xy_velocity_to_arrow(
-        self, 
+        self,
         xy_velocity: torch.Tensor
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """
@@ -506,9 +506,9 @@ class Rob6323Go2Env_FM(Rob6323Go2Env):
     cfg: Rob6323Go2EnvCfg
 
     def __init__(
-            self, 
-            cfg: Rob6323Go2EnvCfg, 
-            render_mode: str | None = None, 
+            self,
+            cfg: Rob6323Go2EnvCfg,
+            render_mode: str | None = None,
             **kwargs
         ) -> None:
         super().__init__(cfg, render_mode, **kwargs)

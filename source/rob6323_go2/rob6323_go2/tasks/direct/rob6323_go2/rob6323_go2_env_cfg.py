@@ -3,19 +3,20 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg
-from isaaclab.envs import DirectRLEnvCfg, ViewerCfg
-from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sim import SimulationCfg
-from isaaclab.utils import configclass
-from isaaclab.terrains import TerrainImporterCfg
-from isaaclab.sensors import ContactSensorCfg
 from isaaclab.actuators import ImplicitActuatorCfg
+from isaaclab.assets import ArticulationCfg
+from isaaclab.envs import DirectRLEnvCfg
+from isaaclab.envs import ViewerCfg
 from isaaclab.markers import VisualizationMarkersCfg
-from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG
+from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG
+from isaaclab.markers.config import GREEN_ARROW_X_MARKER_CFG
+from isaaclab.scene import InteractiveSceneCfg
+from isaaclab.sensors import ContactSensorCfg
+import isaaclab.sim as sim_utils
+from isaaclab.sim import SimulationCfg
+from isaaclab.terrains import TerrainImporterCfg
+from isaaclab.utils import configclass
 from isaaclab_assets.robots.unitree import UNITREE_GO2_CFG
-
 
 
 @configclass
@@ -97,14 +98,14 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
 
     # scene
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
-        num_envs=4096, 
-        env_spacing=4.0, 
+        num_envs=4096,
+        env_spacing=4.0,
         replicate_physics=True,
     )
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
-        prim_path="/World/envs/env_.*/Robot/.*", 
-        history_length=3, 
-        update_period=0.005, 
+        prim_path="/World/envs/env_.*/Robot/.*",
+        history_length=3,
+        update_period=0.005,
         track_air_time=True
     )
 
