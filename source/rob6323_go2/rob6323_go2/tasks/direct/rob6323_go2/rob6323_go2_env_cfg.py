@@ -120,6 +120,8 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
 
 @configclass
 class Rob6323Go2RoughEnvCfg(Rob6323Go2EnvCfg):
+    rewScale_feetClearance = 0.0
+    rewScale_raibertHeuristic = 0.0
     # Use rough terrain
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
