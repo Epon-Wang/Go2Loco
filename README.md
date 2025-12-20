@@ -172,7 +172,7 @@ The suggested way to inspect these logs is via the Open OnDemand web interface:
 
 Course Final Project of *ROB-GY 6323 Reinforcement Learning and Optimal Control for Autonomous Systems I*, instructed by Prof. Ludovic Righetti
 
-. Training robust walking policies for the Unitree Go2 robot using Proximal Policy Optimization (PPO). Employed Raibert Heuristic for gait shaping. Modeled joint actuator friction to bridge the sim-to-real gap.
+Training robust walking policies for the Unitree Go2 robot using Proximal Policy Optimization (PPO). Employed Raibert Heuristic for gait shaping. Modeled joint actuator friction to bridge the sim-to-real gap.
 
 Please refer to [official project site](https://machines-in-motion.github.io/RL_class_go2_project/) for more information
 
