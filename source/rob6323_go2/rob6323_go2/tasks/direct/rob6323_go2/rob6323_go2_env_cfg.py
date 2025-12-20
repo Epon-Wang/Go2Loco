@@ -15,6 +15,7 @@ from isaaclab.sensors import ContactSensorCfg
 import isaaclab.sim as sim_utils
 from isaaclab.sim import SimulationCfg
 from isaaclab.terrains import TerrainImporterCfg
+from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG
 from isaaclab.utils import configclass
 from isaaclab_assets.robots.unitree import UNITREE_GO2_CFG
 
@@ -33,19 +34,19 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     base_height_min = 0.25  # Terminate if base is lower than 25cm
 
     # rewards
-    rewScale_cmd_linVel =         1.0
-    rewScale_cmd_angVel =         0.5
-    rewScale_body_orient =       -5.0
-    rewScale_body_pose =         -0.001
-    rewScale_dofVel =            -0.0001
-    rewScale_dofTorque =         -0.00005
-    rewScale_actionRate =        -0.1
-    rewScale_dofTorque_FM =      -0.00001
-    rewScale_actionRate_FM =     -0.02
-    rewScale_bounce =            -0.02
+    rewScale_cmd_linVel = 1.0
+    rewScale_cmd_angVel = 0.5
+    rewScale_body_orient = -5.0
+    rewScale_body_pose = -0.001
+    rewScale_dofVel = -0.0001
+    rewScale_dofTorque = -0.00005
+    rewScale_actionRate = -0.1
+    rewScale_dofTorque_FM = -0.00001
+    rewScale_actionRate_FM = -0.02
+    rewScale_bounce = -0.02
     rewScale_raibertHeuristic = -10.0
-    rewScale_feetClearance =    -30.0
-    rewScale_trackContacts =      4.0
+    rewScale_feetClearance = -30.0
+    rewScale_trackContacts = 4.0
 
     # PD control Parameters
     Kp = 20.0
@@ -85,15 +86,13 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     )
 
     # robot(s)
-    robot_cfg: ArticulationCfg = UNITREE_GO2_CFG.replace(
-        prim_path="/World/envs/env_.*/Robot"
-    )
+    robot_cfg: ArticulationCfg = UNITREE_GO2_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     robot_cfg.actuators["base_legs"] = ImplicitActuatorCfg(
         joint_names_expr=[".*_hip_joint", ".*_thigh_joint", ".*_calf_joint"],
         effort_limit=23.5,
         velocity_limit=30.0,
         stiffness=0.0,  # CRITICAL: Set to 0 to disable implicit P-gain
-        damping=0.0,    # CRITICAL: Set to 0 to disable implicit D-gain
+        damping=0.0,  # CRITICAL: Set to 0 to disable implicit D-gain
     )
 
     # scene
@@ -103,10 +102,7 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
         replicate_physics=True,
     )
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
-        prim_path="/World/envs/env_.*/Robot/.*",
-        history_length=3,
-        update_period=0.005,
-        track_air_time=True
+        prim_path="/World/envs/env_.*/Robot/.*", history_length=3, update_period=0.005, track_air_time=True
     )
 
     # visualization markers
@@ -118,3 +114,21 @@ class Rob6323Go2EnvCfg(DirectRLEnvCfg):
     )
     goal_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
     current_vel_visualizer_cfg.markers["arrow"].scale = (0.5, 0.5, 0.5)
+
+
+class Rob6323Go2EnvCfgRough(Rob6323Go2EnvCfg):
+    # Use rough terrain
+    terrain = TerrainImporterCfg(
+        prim_path="/World/ground",
+        terrain_type="generator",
+        terrain_generator=ROUGH_TERRAINS_CFG,
+        max_init_terrain_level=9,
+        collision_group=-1,
+        physics_material=sim_utils.RigidBodyMaterialCfg(
+            friction_combine_mode="multiply",
+            restitution_combine_mode="multiply",
+            static_friction=1.0,
+            dynamic_friction=1.0,
+        ),
+        debug_vis=False,
+    )
